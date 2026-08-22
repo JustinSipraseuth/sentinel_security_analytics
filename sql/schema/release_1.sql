@@ -13,7 +13,7 @@ CREATE TABLE organizations(
 	industry TEXT NOT NULL,
 	subscription_tier VARCHAR (50), --I'm unsure what the tiers are called, so this is my current best guess.
 	created_at DATE DEFAULT CURRENT_DATE
-)
+);
 
 /*
 users
@@ -27,12 +27,13 @@ users
 
 CREATE TABLE users(
 	user_id INT PRIMARY KEY,
+	organization_id INT,
 	FOREIGN KEY (organization_id) REFERENCES organizations(organization_id),
 	username VARCHAR(50) NOT NULL,
 	department VARCHAR(50),
 	job_title VARCHAR(100),
 	is_active BOOL --I assume this is whether or not the user is an active user of this account.
-)
+);
 
 /*
 devices
@@ -45,13 +46,14 @@ devices
 
 CREATE TABLE devices(
 	device_id INT PRIMARY KEY,
+	organization_id INT,
 	FOREIGN KEY (organization_id) REFERENCES organizations(organization_id),
 	device_type varchar(50), --I'm not sure what this is. Computer, phone, tablet?
-	operating_system, varchar(50), 
+	operating_system varchar(50), 
 		--I assume this is the name of the OS, like Windows 11, and not a unique ID?
-	manged_by_it BOOL 
+	managed_by_it BOOL 
 		--I'm unsure what this means. Basically, "is it a device handled by IT of an org?"
-)
+);
 
 /*
 authentication_events
@@ -66,11 +68,15 @@ authentication_events
 */
 CREATE TABLE authentication_events(
 	event_id INT PRIMARY KEY,
-	event_timestamp TIMESTAMP,
+	event_timestamp TIMESTAMPTZ,
+	user_id INT,
+	device_id INT,
 	FOREIGN KEY (user_id) REFERENCES users(user_id),
 	FOREIGN KEY (device_id) REFERENCES devices(device_id),
 	ip_address TEXT,
 	application_name TEXT, --Very unsure what this is at all, so TEXT is the default
 	authentication_method TEXT,
-	authentication_result BOOL
-)
+	authentication_result TEXT
+);
+
+
