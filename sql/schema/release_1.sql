@@ -32,7 +32,7 @@ CREATE TABLE users(
 	username VARCHAR(50) NOT NULL, --EB-007: Done!
 	department VARCHAR(50),
 	job_title VARCHAR(100),
-	is_active BOOL --I assume this is whether or not the user is an active user of this account.
+	is_active BOOL, --I assume this is whether or not the user is an active user of this account.
 	UNIQUE (organization_id, username)
 );
 
