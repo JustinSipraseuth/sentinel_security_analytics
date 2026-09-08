@@ -137,6 +137,19 @@ WHERE ip_address = '203.0.113.250'
 	AND authentication_result = 'Invalid Password'
 ;
 
+--You can look for yourself, too.
+SELECT * --time stamp. start to end just to prove that the window is between this time stamp
+FROM authentication_events AS ae
+	INNER JOIN users AS u
+		ON u.user_id = ae.user_id
+	INNER JOIN organizations AS o
+		ON u.organization_id = o.organization_id
+WHERE ip_address = '203.0.113.250' 
+	AND o.organization_id = 2 
+	AND authentication_result = 'Invalid Password'
+ORDER BY event_timestamp ASC
+;
+
 SELECT COUNT (DISTINCT(ae.user_id)) --counts number of distinct users
 FROM authentication_events AS ae
 	INNER JOIN users AS u
