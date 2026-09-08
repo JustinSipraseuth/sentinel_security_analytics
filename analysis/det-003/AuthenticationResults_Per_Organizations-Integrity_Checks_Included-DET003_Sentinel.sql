@@ -1,18 +1,12 @@
 
-SELECT u.user_id
+SELECT u.user_id --Cleaned up for EB-004
 FROM users AS u
 LEFT JOIN authentication_events AS ae
 	ON u.user_id = ae.user_id
-WHERE ae.user_id IS NULL;
+WHERE ae.user_id IS NULL; 
 
 SELECT *
 FROM authentication_events;
-
-SELECT u.user_id
-FROM users AS u
-LEFT JOIN authentication_events AS ae
-	ON u.user_id = ae.user_id
-WHERE ae.user_id IS NULL;
 
 --For Excel Analysis, get all authentication_events, along with organizationIDs with it.
 SELECT
@@ -29,10 +23,7 @@ FROM authentication_events AS ae
 LEFT JOIN users AS u
 	ON u.user_id = ae.user_id
 LEFT JOIN organizations AS o
-	ON u.organization_id = o.organization_id
-;
-FROM authentication_events
-ORDER BY user_id;
+	ON u.organization_id = o.organization_id;
 
 --Integrity is maintained for organizations<-->user. No null organization_id returned, meaning all orgs in users are in organizations.
 SELECT u.organization_id
@@ -48,6 +39,8 @@ LEFT JOIN users AS u
 	ON u.user_id = ae.user_id
 WHERE u.user_id IS NULL;
 
+--EB-002: This is a good point. However, null authresults shouldn't be counted anyway because the metric is meant to measure authentication results that exist.
+--We cannot measure something that does not exist.
 WITH AuthResultsPerOrg AS
 (
 	--Counts successes for AuthResults (Days)
@@ -88,7 +81,7 @@ WITH AuthResultsPerOrg AS
 SELECT organization_id, WeekOfEvent, NumOfAuthResults, NumOfAuthSuccesses, 
 	NumOfAuthResults - NumOfAuthSuccesses AS NumOfFailures, 
 	(NumOfAuthResults+0.0 - NumOfAuthSuccesses)/NumOfAuthResults*100 AS FailureRate
-FROM AuthResultsPerOrg;
+FROM AuthResultsPerOrg; --EB 001: Cleaned up
 
 WITH AuthResultsPerOrg AS
 (
@@ -124,6 +117,7 @@ FROM authentication_events AS ae
 WHERE o.organization_id = 2
   AND CAST(event_timestamp AS DATE) = '2026-08-13';
 
+--EB 003: The numbers for the burst are found in the XLSX sheet titled Weekly_Org2AuthenticationResults_Organizations-DET003_Sentinel. 
 /*203.0.113.250 is the IP address that looked sketchy.
 Before you escalate, I want you to quantify the cluster cleanly. Give me:
 total attempts from that IP during the burst :: 54 attempts during the burst in organization 2
