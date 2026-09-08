@@ -12,6 +12,21 @@ The user should receive business problems, not prescribed SQL techniques. SQL me
 
 GitHub is the source of truth for canonical Sentinel work state. Chat is used for coaching, simulation, review, and interpretation.
 
+## Research basis for the skill progression
+
+The roadmap emphasizes skills that are directly relevant to analytics and, where possible, security analytics:
+
+- The NIST NICE Framework describes **Data Analysis** as analyzing data from multiple disparate sources to provide cybersecurity and privacy insight.
+- Microsoft Sentinel guidance treats filtering, summarizing, joining, baselining, anomaly identification, incident investigation, and suspicious-activity monitoring as routine security-analytics tasks.
+- Microsoft Sentinel sample queries explicitly use aggregations, distinct counts, time windows, baselines, historical comparisons, and anomaly detection across sign-in, audit, network, and process telemetry.
+
+These sources support keeping the roadmap centered on data validation, joins, aggregation, segmentation, baselines, anomaly investigation, event sequencing, data quality, prioritization, detection evaluation, and defensible communication.
+
+References:
+- NIST NICE Framework Work Role Videos: https://www.nist.gov/itl/applied-cybersecurity/nice/nice-framework-work-role-videos
+- Microsoft Learn — Common Tasks With KQL for Microsoft Sentinel: https://learn.microsoft.com/en-us/kusto/query/tutorials/common-tasks-microsoft-sentinel?view=microsoft-sentinel
+- Microsoft Learn — Sample KQL Queries for Microsoft Sentinel Data Lake: https://learn.microsoft.com/en-us/azure/sentinel/datalake/kql-sample-queries
+
 ---
 
 ## Release 1 — Authentication Analytics
@@ -52,27 +67,38 @@ GitHub is the source of truth for canonical Sentinel work state. Chat is used fo
 - concentration vs broad impact
 - stakeholder recommendations
 
+**Scope guardrail:** Do not force a new anomaly if the application-level signal mainly reflects behavior already discovered in DET-003. A valid conclusion may be that application segmentation adds limited new information.
+
 ---
 
-### DET-005 — Authentication Method Performance
-**Goal:** Evaluate how authentication methods behave and identify methods associated with disproportionate failure or friction.
+### DET-005 — Authentication Method & Outcome Coverage Review
+**Goal:** Evaluate whether authentication method is a useful analytical segment in Release 1. Compare known outcomes across methods, examine missing/unknown outcomes, and determine whether the data actually supports claims that one method performs materially differently from another.
 
 **Analyst growth:**
 - conditional aggregation
 - comparative metrics
 - normalization
-- interpretation vs causation
+- missing-data interpretation
+- testing whether a segmentation variable is genuinely informative
+- distinguishing evidence from causation
+- writing a defensible negative or inconclusive finding
+
+**Scope guardrail:** The Release 1 method distribution is relatively homogeneous. Do not manufacture a method-performance story if the observed differences are weak.
 
 ---
 
-### DET-006 — Device Trust & Authentication Outcomes
-**Goal:** Investigate managed, unmanaged, and unknown-device contexts and determine whether device context materially changes authentication outcomes.
+### DET-006 — Device Context & Authentication Outcomes
+**Goal:** Investigate managed, unmanaged, and unknown-device contexts and test whether device context materially changes authentication outcomes. The ticket should ask whether a relationship exists rather than assume one exists.
 
 **Analyst growth:**
 - multi-table joins
 - NULL handling
 - categorical analysis
+- segmentation and confounding awareness
 - operational interpretation
+- rejecting unsupported hypotheses
+
+**Scope guardrail:** Treat device-management status as an observed association, not a causal explanation. If differences are weak or confounded, that is an acceptable conclusion.
 
 ---
 
@@ -85,6 +111,7 @@ GitHub is the source of truth for canonical Sentinel work state. Chat is used fo
 - trend analysis
 - windows where useful
 - iterative investigation
+- anomaly identification
 
 ---
 
@@ -97,6 +124,7 @@ GitHub is the source of truth for canonical Sentinel work state. Chat is used fo
 - time/frequency analysis
 - security-oriented reasoning
 - escalation judgment
+- separating suspicious behavior from unsupported attribution
 
 ---
 
@@ -109,6 +137,7 @@ GitHub is the source of truth for canonical Sentinel work state. Chat is used fo
 - LAG/LEAD when appropriate
 - behavioral context
 - hypothesis testing
+- incident-style investigation
 
 ---
 
@@ -129,32 +158,39 @@ GitHub is the source of truth for canonical Sentinel work state. Chat is used fo
 **Analyst growth:**
 - data-quality SQL
 - missingness analysis
+- coverage assessment
 - impact assessment
 - practical recommendations
 
 ---
 
-### DET-012 — SOC Workload Prioritization
-**Goal:** Determine which customers, users, applications, or failure patterns account for most operational burden and recommend where the SOC should focus.
+### DET-012 — Authentication Failure Burden Prioritization
+**Goal:** Determine which customers, users, applications, or recurring failure patterns account for the largest share of authentication-failure burden and recommend where deeper investigation or monitoring effort should be concentrated.
 
 **Analyst growth:**
 - ranking
 - cumulative contribution
 - Pareto-style analysis
+- concentration analysis
 - prioritization
 - operational decision support
 
+**Scope guardrail:** Release 1 does not contain analyst queues, case assignments, handling time, staffing, or other evidence needed to measure true SOC workload. Do not label authentication-event volume as SOC workload.
+
 ---
 
-### DET-013 — Customer Authentication Risk Scorecard
-**Goal:** Combine multiple defensible metrics into a customer-prioritization model and document assumptions behind the scoring approach.
+### DET-013 — Customer Authentication Monitoring Priority Scorecard
+**Goal:** Combine multiple observable, defensible authentication-health indicators into a customer monitoring-priority model and document the assumptions behind the scoring approach.
 
 **Analyst growth:**
 - metric design
 - CTE-style decomposition
 - weighting/normalization decisions
 - sensitivity to assumptions
+- transparent prioritization
 - business communication
+
+**Scope guardrail:** This is a monitoring-priority or authentication-health scorecard, not a validated cyber-risk model. Do not claim that the score measures breach likelihood, business impact, or overall customer risk.
 
 ---
 
@@ -166,6 +202,7 @@ GitHub is the source of truth for canonical Sentinel work state. Chat is used fo
 - false-positive/false-negative thinking
 - threshold evaluation
 - operational trade-offs
+- detection-engineering collaboration
 
 ---
 
@@ -177,10 +214,13 @@ GitHub is the source of truth for canonical Sentinel work state. Chat is used fo
 - explainability
 - trust and caveats
 - translating technical findings
+- separating observed evidence from security claims
 
 ---
 
 ## Release 2 — Alerts, Incidents, and SOC Operations
+
+> **Blocked until Release 2 exists and is validated.** DET-016 through DET-021 must not begin until the Release 2 schema and dataset have been generated, loaded, and accepted. Their final framing should be validated against the actual data before tickets are issued.
 
 ### DET-016 — Release 2 Warehouse Onboarding
 **Goal:** Learn new alert/incident tables and establish their grains and relationships before analysis.
@@ -271,3 +311,4 @@ Use reviewers only when relevant to the work.
 5. GitHub holds canonical ticket/work state; do not rely on chat memory alone for exact DET-### assignments.
 6. Infrastructure work should support analyst practice, not replace it.
 7. Before introducing a new ticket, verify the current ticket is complete and consult this roadmap.
+8. Before issuing a ticket whose conclusion depends on a specific signal, validate that the current release actually contains enough evidence to investigate the question without forcing the answer.
