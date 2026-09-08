@@ -41,6 +41,7 @@ WHERE u.user_id IS NULL;
 
 --EB-002: This is a good point. However, null authresults shouldn't be counted anyway because the metric is meant to measure authentication results that exist.
 --We cannot measure something that does not exist.
+--NumOfAuthResults is number of KNOWN authentication results. Nulls are excluded, thus failure rate would include only known authentication results. Null is not counted..
 WITH AuthResultsPerOrg AS
 (
 	--Counts successes for AuthResults (Days)
@@ -125,12 +126,29 @@ number of distinct users targeted :: 14 in the burst
 start and end time :: 8/13 19:15:22 - 8/13 19:33:59
 whether any attempt from that IP succeeded :: Yes, in multiple places. In fact, there was only one other failure besides the burst.
 and whether that IP appears elsewhere in the dataset outside this burst. :: Yes, multiple places. It appears in several other organizations a few times with seemingly normal activity.*/
-SELECT COUNT (DISTINCT(ae.user_id))
+SELECT COUNT (DISTINCT(ae.user_id)) --counts number of distinct users
 FROM authentication_events AS ae
 	INNER JOIN users AS u
 		ON u.user_id = ae.user_id
 	INNER JOIN organizations AS o
 		ON u.organization_id = o.organization_id
 WHERE ip_address = '203.0.113.250' AND o.organization_id = 2 AND authentication_result = 'Invalid Password'
-;--ORDER BY event_timestamp ASC;
+;
+
+SELECT * --time stamp. start to end
+FROM authentication_events AS ae
+	INNER JOIN users AS u
+		ON u.user_id = ae.user_id
+	INNER JOIN organizations AS o
+		ON u.organization_id = o.organization_id
+WHERE ip_address = '203.0.113.250' AND o.organization_id = 2 AND authentication_result = 'Invalid Password'
+ORDER BY event_timestamp ASC;
+
+SELECT COUNT(authentication_result) --counts number of invalid password attempts
+FROM authentication_events AS ae
+	INNER JOIN users AS u
+		ON u.user_id = ae.user_id
+	INNER JOIN organizations AS o
+		ON u.organization_id = o.organization_id
+WHERE ip_address = '203.0.113.250' AND o.organization_id = 2 AND authentication_result = 'Invalid Password';
 
