@@ -5,12 +5,13 @@ Is authentication method a useful way to explain differences in authentication o
 Do any methods show materially different failure behavior, or are the differences too small to support a meaningful conclusion?
 
 ## Important definitions / assumptions
-Application: Application used for that authentication.
+Method: The method used for that authentication (e.g., SSO, Password, MFA)
 
 Assumptions:
 - A failure is counted as NOT success.
 - A failure rate is total failures divided by total authentication results.
 - Authentication results are all NON-NULL, so counting all of them counts the total rows.
+- Authentication methods are all NON-null.
 
 ## Investigation
 Investigated authentication results per authentication method
@@ -22,7 +23,7 @@ What I think it means: No abnormalities spotted.
 Next: This concludes the testing.
 
 ## Conclusion
-No, authentication method is not a useful way to explain differences in authentication outcomes. No methods show anything materially different in failure behavior, as the differences are too small to support a small conclusion, with the range of failure rates being only 1.25% wide.
+No, aggregate authentication method is not a useful way to explain differences in authentication failure amounts. No methods show anything materially different in failure behavior, as the differences are too small to support a small conclusion, with the range of failure rates being only 1.25% wide.
 
 ## Limitations
 This investigation only implies that authentication_method does not have any meaningful differences for failure rate.
